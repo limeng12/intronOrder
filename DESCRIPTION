@@ -1,0 +1,49 @@
+Package: intronOrder
+Type: Package
+Title: Intron Splicing Order Analysis
+Version: 0.1.0
+Authors@R: person("Meng", "Li", email = "limeng49631@aliyun.com", 
+                   role = c("aut", "cre"))
+Description: Analysis of intron splicing order using ILP.
+    This package implements algorithms for determining the most likely intron
+    splicing order from RNA-seq data.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+Depends:
+    R (>= 4.0.0),
+    Rcpp,
+    plyr,
+    dplyr,
+    igraph,
+    stringr,
+    dbscan,
+    ggplot2,
+    ggraph,
+    tidygraph,
+    reshape2,
+    gridExtra,
+    data.table,
+    plotly,
+    DT,
+    jsonlite,
+    htmltools,
+    GenomicAlignments,
+   Rsymphony,
+    Rsamtools
+Imports:
+    GenomicRanges,
+    parallel,
+    scales
+Suggests:
+    testthat (>= 3.0.0),
+    knitr,
+    rmarkdown,
+    BiocStyle,
+    Sushi,
+    readr,
+    DT
+LinkingTo: 
+    Rcpp
