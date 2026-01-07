@@ -31,7 +31,6 @@ Depends:
     jsonlite,
     htmltools,
     GenomicAlignments,
-   Rsymphony,
     Rsamtools
 Imports:
     GenomicRanges,
