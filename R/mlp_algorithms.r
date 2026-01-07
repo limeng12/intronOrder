@@ -86,7 +86,6 @@ find_path_global <- function(t_adj_mat, t_alpha_v = 0.1, is_verbose = FALSE) {
 #' @param t_alpha_v Smoothing parameter
 #' @param verbose_hill Whether to print verbose output
 #' @return List containing best order
-#' @importFrom lpsymphony lpsymphony_solve_LP
 #' @importFrom igraph graph_from_adjacency_matrix topo_sort
 #' @importFrom utils combn
 lp_kenemy <- function(t_adj_mat, t_alpha_v, verbose_hill = FALSE) {
