@@ -21,33 +21,22 @@ An R package for analyzing intron splicing order using Integer Linear Programmin
 ### From GitHub (Development Version)
 
 ```r
-# Install devtools if not already installed
-if (!require("devtools")) {
-    install.packages("devtools")
-}
 
-# 安装CRAN包
-install.packages(c(
-  "Rcpp", "plyr", "dplyr", "igraph", "stringr", "dbscan",
-  "ggplot2", "ggraph", "tidygraph", "reshape2", "gridExtra",
-  "data.table", "plotly", "DT", "jsonlite", "htmltools",
-  "parallel", "scales", "testthat", "knitr", "rmarkdown", "readr"
-))
-
-# 安装Bioconductor包
-if (!require("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
-
-BiocManager::install(c(
-  "GenomicAlignments", "Rsamtools", "GenomicRanges", 
-  "BiocStyle", "Sushi"
-))
+conda create -n r_hrd -c conda-forge -c bioconda \
+r-base=4.4 r-devtools \
+r-rcpp r-plyr r-dplyr r-igraph r-stringr r-dbscan \
+r-ggplot2 r-ggraph r-tidygraph r-reshape2 r-gridextra \
+r-data.table r-plotly r-dt r-jsonlite r-htmltools \
+r-scales r-testthat r-knitr r-rmarkdown r-readr \
+bioconductor-genomicalignments bioconductor-rsamtools \
+bioconductor-genomicranges bioconductor-biocstyle -y
 
 # 特殊包
 install.packages("Rsymphony", repos = "https://cran.r-project.org")
-
+install.packages("lpSovle")
 # Install the package from GitHub
 devtools::install_github("limeng12/intronOrder")
+
 ```
 
 ### Dependencies
@@ -67,6 +56,8 @@ The package has the following dependencies which will be installed automatically
 ```r
 # Load the package
 library(intronOrder)
+library(Rsymphony)
+library(lpSolve)
 
 # Get example data paths from package
 bedfile <- system.file("extdata", 

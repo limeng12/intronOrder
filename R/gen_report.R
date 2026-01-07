@@ -317,7 +317,8 @@ generate_html_page <- function(all_data, output_file = "splicing_order_report.ht
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Intron Splicing Order Analysis</title>
-    
+    <link rel="icon" type="image/x-icon" href="https://img.icons8.com/color/48/000000/dna-helix.png">
+<link rel="shortcut icon" type="image/x-icon" href="https://img.icons8.com/color/48/000000/dna-helix.png">
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
@@ -757,7 +758,7 @@ generate_html_page <- function(all_data, output_file = "splicing_order_report.ht
               if (nIntrons <= 15) return 80;
               
               
-              if (nIntrons <= 20) return 60;
+              if (nIntrons <= 30) return 60;
               
               return minSpacing;
               // 线性递减：每增加一个节点，减少 4 个像素间距
@@ -783,17 +784,25 @@ generate_html_page <- function(all_data, output_file = "splicing_order_report.ht
                 return;
             }
             
-                const nIntrons = bestOrder.length;
-            if (nIntrons > 0) {
-                const dynamicSpacing = calculateDynamicNodeSpacing(nIntrons);
-                mloParams.nodeSpacing = dynamicSpacing;
+            const nIntrons = bestOrder.length;
                 
-                // 更新界面控件显示
-                const nodeSpacingSlider = document.getElementById("nodeSpacingSlider");
-                const nodeSpacingValueSpan = document.getElementById("nodeSpacingValue");
-                if (nodeSpacingSlider) nodeSpacingSlider.value = dynamicSpacing;
-                if (nodeSpacingValueSpan) nodeSpacingValueSpan.textContent = dynamicSpacing;
+                
+            if (typeof mloParams.nodeSpacingUserSet === undefined || mloParams.nodeSpacingUserSet === false) {
+                const nIntrons = currentData.best_order.length;
+                if (nIntrons > 0) {
+                    const dynamicSpacing = calculateDynamicNodeSpacing(nIntrons);
+                    mloParams.nodeSpacing = dynamicSpacing;
+                    
+                    // 更新界面控件显示
+                    const nodeSpacingSlider = document.getElementById("nodeSpacingSlider");
+                    const nodeSpacingValueSpan = document.getElementById("nodeSpacingValue");
+                    if (nodeSpacingSlider) nodeSpacingSlider.value = dynamicSpacing;
+                    if (nodeSpacingValueSpan) nodeSpacingValueSpan.textContent = dynamicSpacing;
+                }
             }
+    
+            
+            
             
             // 1. 按best_order顺序排序节点
             const sortedNodes = [];
@@ -1006,6 +1015,7 @@ generate_html_page <- function(all_data, output_file = "splicing_order_report.ht
                 .enter().append("circle")
                 .attr("class", "mlo-node")
                 .attr("cx", d => d.x).attr("cy", d => d.y)
+                .attr("font-size", mloParams.fontSize + "px")  // 关键：使用参数而不是固定值
                 .attr("r", d => d.radius)
                 .attr("fill", "#4CAF50").attr("stroke", "white")
                 .attr("stroke-width", 3);
@@ -1288,11 +1298,20 @@ generate_html_page <- function(all_data, output_file = "splicing_order_report.ht
         function updateFontSize(value) {
             mloParams.fontSize = parseInt(value);
             document.getElementById("fontSizeValue").textContent = value;
-            renderMLONet();
+            
+            // 直接更新已存在的文本元素，避免完全重新渲染
+            //if (svg) {
+            //    svg.selectAll(".mlo-node-text")
+            //        .attr("font-size", mloParams.fontSize + "px");
+            //} else {
+                renderMLONet();  // 如果没有SVG，则重新渲染
+            //}
         }
         
         function updateNodeSpacing(value) {
             mloParams.nodeSpacing = parseInt(value);
+            mloParams.nodeSpacingUserSet = true;  // 标记为用户手动设置
+
             document.getElementById("nodeSpacingValue").textContent = value;
             renderMLONet();
         }

@@ -153,11 +153,15 @@ lp_kenemy <- function(t_adj_mat, t_alpha_v, verbose_hill = FALSE) {
   #print("Got all coefficients")
   max <- TRUE
   
-  save(f.obj,f.con,f.dir,f.rhs,max,file="xx.Rd")
+  #save(f.obj,f.con,f.dir,f.rhs,max,file="xx.Rd")
   #a <- lpsymphony_solve_LP(obj = f.obj, mat = f.con, dir = f.dir, 
   #                        rhs = f.rhs, max = max, types = "B")
   
-  a <- Rsymphony_solve_LP(
+  
+  
+  
+  
+  a <- Rsymphony_solve_LP2(
     obj = f.obj,
     mat = f.con,
     dir = f.dir,

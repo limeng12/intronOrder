@@ -47,7 +47,7 @@ void close_debug_log() {
 }
 
 // 调试打印函数
-void debug_print(int level, const std::string& message) {
+inline void debug_print(int level, const std::string& message) {
   if (level <= DEBUG_LEVEL && g_debug_log_open) {
     g_debug_log_file << "[DEBUG " << level << "] " << message << std::endl;
     g_debug_log_file.flush();
@@ -56,7 +56,7 @@ void debug_print(int level, const std::string& message) {
 
 // ====================== 辅助函数 ======================
 
-vector<int> get_splice_junction_pos(const string& cigar, int read_start) {
+inline vector<int> get_splice_junction_pos(const string& cigar, int read_start) {
   debug_print(3, "进入 get_splice_junction_pos");
   debug_print(3, "cigar: " + cigar);
   debug_print(3, "read_start: " + to_string(read_start));
@@ -97,16 +97,16 @@ vector<int> get_splice_junction_pos(const string& cigar, int read_start) {
   return junctions;
 }
 
-bool all_junctions_in_intron(const std::vector<int>& junctions,
+inline bool all_junctions_in_intron(const std::vector<int>& junctions,
                              const std::unordered_set<std::string>& transcript_introns,
                              string chr,
                              const std::unordered_set<std::string>& all_introns) {
   
   // 如果 junctions 为空、长度不足2、或为奇数，说明没有有效剪接点对
-  // Java 的逻辑是：这种情况下不进行任何过滤，视为“兼容”
+  // Java 的逻辑是：这种情况下不进行任何过滤，视为"兼容"
   if (junctions.size() < 2 || junctions.size() % 2 != 0) {
     debug_print(3, "剪接点列表为空、不足或格式不完整，跳过检查（视为兼容）");
-    return true; // 👈 关键：返回 true，表示“无冲突”
+    return true; // 👈 关键：返回 true，表示"无冲突"
   }
   
   // 遍历所有有效的剪接点对 (donor, acceptor)
@@ -120,7 +120,7 @@ bool all_junctions_in_intron(const std::vector<int>& junctions,
     // 检查该剪接点是否不在当前转录本中，但却存在于全局注释中
     if (transcript_introns.find(junction_key) == transcript_introns.end() &&
         all_introns.find(junction_key) != all_introns.end()) {
-      // 发现一个“外来但已知”的剪接点 → 该 read 与当前转录本不兼容
+      // 发现一个"外来但已知"的剪接点 → 该 read 与当前转录本不兼容
       debug_print(3, "发现外来剪接点: " + junction_key);
       return false;
     }
@@ -129,13 +129,13 @@ bool all_junctions_in_intron(const std::vector<int>& junctions,
 }
 
 
-bool check_read_coverage(int read_start, int read_end,
-                         int left_intron_start, int left_intron_end,
-                         int left_exon_end, int right_exon_start,
-                         int intron_flank_threshold,
-                         bool consider_exon_in_intron,
-                         const vector<int>& junctions,
-                         bool& has_junction_at_this_intron) {
+inline bool check_read_coverage(int read_start, int read_end,
+                                int left_intron_start, int left_intron_end,
+                                int left_exon_end, int right_exon_start,
+                                int intron_flank_threshold,
+                                bool consider_exon_in_intron,
+                                const vector<int>& junctions,
+                                bool& has_junction_at_this_intron) {
   
   debug_print(3, "进入 check_read_coverage");
   debug_print(3, "read_start: " + to_string(read_start) + ", read_end: " + to_string(read_end));
@@ -146,6 +146,8 @@ bool check_read_coverage(int read_start, int read_end,
   // 检查是否有junction正好是这个内含子，如果是的话，再简单判断一下就可以返回false了。
   for (size_t j = 0; j < junctions.size(); j += 2) {
     if (j + 1 >= junctions.size()) break;
+    
+    if(junctions[j]>left_intron_end) break;
     
     if (junctions[j] == left_intron_start && junctions[j+1] == left_intron_end) {
       has_junction_at_this_intron = true;
@@ -167,7 +169,11 @@ bool check_read_coverage(int read_start, int read_end,
       debug_print(3, "有junction在左侧内含子区域内，返回false");
       return false;
     }
+    if(junctions[j]>left_intron_end) break;
+    
   }
+
+  
   
   // 检查是否有junction跨越这个内含子
   for (size_t j = 0; j < junctions.size(); j += 2) {
@@ -177,6 +183,8 @@ bool check_read_coverage(int read_start, int read_end,
       debug_print(3, "有junction跨越左侧内含子，返回false");
       return false;
     }
+    if(junctions[j]>left_intron_end) break;
+    
   }
   
   // 计算anchor_region_len
@@ -242,7 +250,7 @@ bool check_read_coverage(int read_start, int read_end,
 // ====================== 主分析函数 ======================
 
 // 兼容 func2.R 中的 analyze_transcript_java_exact 函数
-//[[Rcpp::export]]
+// [[Rcpp::export(rng=false)]]
 List analyze_transcript_java_exact(List transcript_info,
                                    List bam_data,
                                    int intron_flank_threshold = 90,
@@ -297,16 +305,38 @@ List analyze_transcript_java_exact(List transcript_info,
       debug_print(3, "内含子 " + to_string(i) + ": " + intron_key);
     }
     
-    // 解析BAM数据（与 get_transcript_bam_data 输出格式匹配）
-    CharacterVector read_names = bam_data["qname"];
-    IntegerVector read_starts = bam_data["pos"];
-    IntegerVector read_ends = bam_data["end"];
-    IntegerVector mapqs = bam_data["mapq"];
-    CharacterVector cigars = bam_data["cigar"];
+    // 解析BAM数据 - 使用C++标准数据结构以提高效率
+    CharacterVector read_names_r = bam_data["qname"];
+    IntegerVector read_starts_r = bam_data["pos"];
+    IntegerVector read_ends_r = bam_data["end"];
+    IntegerVector mapqs_r = bam_data["mapq"];
+    CharacterVector cigars_r = bam_data["cigar"];
     List nh_tags = bam_data["nh"];
     List ji_tags = bam_data["ji"];
     
-    int n_reads = read_names.size();
+    // 转换为C++标准容器
+    vector<string> read_names;
+    vector<int> read_starts;
+    vector<int> read_ends;
+    vector<int> mapqs;
+    vector<string> cigars;
+    
+    // 转换数据
+    int n_reads = read_names_r.size();
+    read_names.reserve(n_reads);
+    read_starts.reserve(n_reads);
+    read_ends.reserve(n_reads);
+    mapqs.reserve(n_reads);
+    cigars.reserve(n_reads);
+    
+    for (int i = 0; i < n_reads; i++) {
+      read_names.push_back(as<string>(read_names_r[i]));
+      read_starts.push_back(read_starts_r[i]);
+      read_ends.push_back(read_ends_r[i]);
+      mapqs.push_back(mapqs_r[i]);
+      cigars.push_back(as<string>(cigars_r[i]));
+    }
+    
     debug_print(1, "读取到 " + to_string(n_reads) + " 条reads");
     
     if (n_reads == 0) {
@@ -330,7 +360,11 @@ List analyze_transcript_java_exact(List transcript_info,
     
     
     debug_print(2, "开始逐内含子分析...");
-
+    
+    std::unordered_map<std::string, vector<int> > junction_pos;
+    std::unordered_map<std::string, bool> junction_in_intron;
+    
+    
     // 逐内含子处理
     for (int left_idx = 0; left_idx < n_introns; left_idx++) {
       debug_print(2, "处理左侧内含子 " + to_string(left_idx));
@@ -383,8 +417,8 @@ List analyze_transcript_java_exact(List transcript_info,
           continue;
         }
         
-        string read_name = as<string>(read_names[r]);
-        string cigar = as<string>(cigars[r]);
+        string read_name = read_names[r];
+        string cigar = cigars[r];
         
         // 获取剪接点信息
         vector<int> junctions;
@@ -398,15 +432,39 @@ List analyze_transcript_java_exact(List transcript_info,
             }
           }
         } else if (cigar.find('N') != string::npos) {
-          junctions = get_splice_junction_pos(cigar, read_start);
+          
+          if(junction_pos.find(to_string(read_start)+cigar)== junction_pos.end() ){
+            junctions = get_splice_junction_pos(cigar, read_start);
+            junction_pos.insert({to_string(read_start)+cigar, junctions});
+            
+          }else{
+            junctions=junction_pos.at(to_string(read_start)+cigar);
+          }
+          
         }
         
         // 检查剪接点是否在已知内含子内
         if (!junctions.empty()) {
-          if (!all_junctions_in_intron(junctions, transcript_introns, chr, all_introns)) {
-            continue;
+          
+          bool j_i_in=false;
+          if(junction_in_intron.find(to_string(read_start)+cigar)==junction_in_intron.end()){
+            j_i_in=all_junctions_in_intron(junctions, transcript_introns, chr, all_introns);
+            
+            junction_in_intron.insert({to_string(read_start)+cigar, j_i_in});
+            
+          }else{
+            j_i_in=junction_in_intron.at(to_string(read_start)+cigar);
+ 
           }
+          if(j_i_in==false)
+            continue;
+          // 
+          // if (!all_junctions_in_intron(junctions, transcript_introns, chr, all_introns)) {
+          //   continue;
+          // }
         }
+        
+        
         
         // 检查覆盖
         bool has_junction_at_this_intron = false;
@@ -427,6 +485,8 @@ List analyze_transcript_java_exact(List transcript_info,
           cover_left_names.insert(read_name);
           passed_reads++;
         }
+        
+        
       }
       
       debug_print(2, "检查 " + to_string(checked_reads) + " 条reads，通过 " + to_string(passed_reads) + " 条");
@@ -465,7 +525,7 @@ List analyze_transcript_java_exact(List transcript_info,
           }
         }
         
-        string read_name = as<string>(read_names[r]);
+        string read_name = read_names[r];
         
         bool is_cover = cover_left_names.count(read_name) > 0;
         bool is_left_jc = left_jc_names.count(read_name) > 0;
@@ -476,6 +536,7 @@ List analyze_transcript_java_exact(List transcript_info,
         int read_end = read_ends[r];
         
         if (read_start > tx_end || read_end < tx_start) continue;//不在转录本区域内
+        string cigar = cigars[r];
         
         // 获取剪接点
         vector<int> junctions;
@@ -489,17 +550,42 @@ List analyze_transcript_java_exact(List transcript_info,
             }
           }
         } else {
-          string cigar = as<string>(cigars[r]);
           if (cigar.find('N') != string::npos) {
-            junctions = get_splice_junction_pos(cigar, read_start);
+            //junctions = get_splice_junction_pos(cigar, read_start);
+            if(junction_pos.find(to_string(read_start)+cigar)== junction_pos.end() ){
+              junctions = get_splice_junction_pos(cigar, read_start);
+              junction_pos.insert({to_string(read_start)+cigar, junctions});
+              
+            }else{
+              junctions=junction_pos.at(to_string(read_start)+cigar);
+            
+            }
           }
         }
         
         if (junctions.size() < 2) continue;//splice site少于2
         
-        if (!all_junctions_in_intron(junctions, transcript_introns, chr, all_introns)) {
-          continue;
+        // if (!all_junctions_in_intron(junctions, transcript_introns, chr, all_introns)) {
+        //   continue;
+        // }
+        
+        if (!junctions.empty()) {
+          
+          bool j_i_in=false;
+          if(junction_in_intron.find(to_string(read_start)+cigar)==junction_in_intron.end()){
+            j_i_in=all_junctions_in_intron(junctions, transcript_introns, chr, all_introns);
+            
+            junction_in_intron.insert({to_string(read_start)+cigar, j_i_in});
+            
+          }else{
+            j_i_in=junction_in_intron.at(to_string(read_start)+cigar);
+            
+          }
+          if(j_i_in==false)
+            continue;
         }
+        
+        
         
         for (size_t j = 0; j < junctions.size(); j += 2) {
           if (j + 1 >= junctions.size()) break;
@@ -578,7 +664,7 @@ List analyze_transcript_java_exact(List transcript_info,
       }
     }
     
-
+    
     debug_print(1, "分析完成，找到 " + to_string(result_transcripts.size()) + " 个内含子对");
     debug_print(1, "========================================");
     
@@ -590,14 +676,14 @@ List analyze_transcript_java_exact(List transcript_info,
       Named("strand") = result_strands,
       Named("cover_count") = result_cover_counts,
       Named("junction_count") = result_junction_counts
-      
+    
     );
-
+    
     
     List result_list = List::create(      Named("result_list_1") = result_list_1,
                                           Named("result_cover_left_names")=result_cover_left_names
                                             
-                                          );
+    );
     
     close_debug_log();
     
