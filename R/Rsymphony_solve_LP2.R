@@ -2,19 +2,25 @@
 Rsymphony_solve_LP2 <- function(obj, mat, dir, rhs, types = NULL, max = FALSE) {
   
   # 尝试Rsymphony
-  if (requireNamespace("Rsymphony", quietly = TRUE)) {
-    return(Rsymphony::Rsymphony_solve_LP(obj, mat, dir, rhs, types, max))
+  if (requireNamespace("Rsymphony", quietly = TRUE) ) {
+    #print("using Rsymphony")
+    return(Rsymphony::Rsymphony_solve_LP(obj=obj, mat=mat, dir=dir, rhs=rhs, 
+                                         types=types, max=max) );
+    
   }
   
   # 尝试lpSolve
-  if (requireNamespace("lpSolve", quietly = TRUE)) {
-    return(.simple_lpSolve_wrapper(obj, mat, dir, rhs, types, max))
+  if (requireNamespace("lpSolve", quietly = TRUE) ) {
+    #print("using lpSolve")
+    
+    return(.simple_lpSolve_wrapper(obj, mat, dir, rhs, types, max) );
+    
   }
   
   # 安装lpSolve
-  install.packages("lpSolve", repos = "https://cloud.r-project.org", quiet = TRUE)
-  library(lpSolve, quietly = TRUE)
-  return(.simple_lpSolve_wrapper(obj, mat, dir, rhs, types, max))
+  # install.packages("lpSolve", repos = "https://cloud.r-project.org", quiet = TRUE)
+  # library(lpSolve, quietly = TRUE)
+  # return(.simple_lpSolve_wrapper(obj, mat, dir, rhs, types, max))
 }
 
 .simple_lpSolve_wrapper <- function(obj, mat, dir, rhs, types, max) {

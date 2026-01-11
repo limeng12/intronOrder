@@ -158,8 +158,6 @@ lp_kenemy <- function(t_adj_mat, t_alpha_v, verbose_hill = FALSE) {
   
   
   
-  
-  
   a <- Rsymphony_solve_LP2(
     obj = f.obj,
     mat = f.con,

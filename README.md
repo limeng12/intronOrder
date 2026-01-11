@@ -98,8 +98,8 @@ generate_splicing_order_report(
 )
 
 # PDF visualizations
-draw_mlo_plot(igraph_list, "results.plot.pdf")
-draw_mol_table_plot(igraph_list, "results.table.pdf")
+#draw_mlo_plot(igraph_list, "results.plot.pdf")
+#draw_mol_table_plot(igraph_list, "results.table.pdf")
 ```
 
 ## Analysis Pipeline

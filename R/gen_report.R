@@ -293,7 +293,8 @@ extract_splicing_data <- function(t_igraph_list) {
       mlo_edges = mlo_edges,
       # 原始顺序标签
       original_labels = rownames(orig_adj_matrix)
-    )
+    );
+    
   }
   
   cat("Successfully processed", length(all_data), "transcripts\n")
@@ -487,7 +488,9 @@ generate_html_page <- function(all_data, output_file = "splicing_order_report.ht
             linkOpacity: 0.7,
             linkWidthMultiplier: 0.3,
             width: 1000,
-            height: 600
+            height: 600,
+            nodeSpacingUserSet: false  // 添加这个属性
+
         };
         
         // ========== 辅助函数 ==========
@@ -507,8 +510,14 @@ generate_html_page <- function(all_data, output_file = "splicing_order_report.ht
             return transcripts.sort((a, b) => {
                 const dataA = allData[a];
                 const dataB = allData[b];
-                const geneCompare = dataA.gene_symbol.localeCompare(dataB.gene_symbol);
+                
+                // 处理可能的空值
+                const geneA = dataA.gene_symbol || "";
+                const geneB = dataB.gene_symbol || "";
+                
+                const geneCompare = geneA.localeCompare(geneB);
                 if (geneCompare !== 0) return geneCompare;
+                
                 return a.localeCompare(b);
             });
         }
@@ -787,7 +796,7 @@ generate_html_page <- function(all_data, output_file = "splicing_order_report.ht
             const nIntrons = bestOrder.length;
                 
                 
-            if (typeof mloParams.nodeSpacingUserSet === undefined || mloParams.nodeSpacingUserSet === false) {
+            if (mloParams.nodeSpacingUserSet === false) {  // 简化为直接检查值
                 const nIntrons = currentData.best_order.length;
                 if (nIntrons > 0) {
                     const dynamicSpacing = calculateDynamicNodeSpacing(nIntrons);
@@ -1161,7 +1170,8 @@ generate_html_page <- function(all_data, output_file = "splicing_order_report.ht
             const data = allData[transId];
             currentData = data;
             currentMatrixOrder = "best";
-            
+                mloParams.nodeSpacingUserSet = false;
+
             const detailHTML = `
                 <div class="card">
                     <div class="card-header">

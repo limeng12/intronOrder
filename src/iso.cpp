@@ -399,15 +399,15 @@ List analyze_transcript_java_exact(List transcript_info,
         }
         
         // 检查NH标签
-        if (!Rf_isNull(nh_tags[r])) {
-          SEXP nh_val = nh_tags[r];
-          if (TYPEOF(nh_val) == INTSXP) {
-            int nh = INTEGER(nh_val)[0];
-            if (nh > 1) {
-              continue;
-            }
-          }
-        }
+        // if (false && !Rf_isNull(nh_tags[r])) {
+        //   SEXP nh_val = nh_tags[r];
+        //   if (TYPEOF(nh_val) == INTSXP) {
+        //     int nh = INTEGER(nh_val)[0];
+        //     if (nh > 1) {
+        //       continue;
+        //     }
+        //   }
+        // }
         
         int read_start = read_starts[r];
         int read_end = read_ends[r];
@@ -422,16 +422,17 @@ List analyze_transcript_java_exact(List transcript_info,
         
         // 获取剪接点信息
         vector<int> junctions;
-        if (!Rf_isNull(ji_tags[r])) {
-          SEXP ji_val = ji_tags[r];
-          if (TYPEOF(ji_val) == INTSXP) {
-            int* ji_data = INTEGER(ji_val);
-            int ji_len = LENGTH(ji_val);
-            for (int j = 0; j < ji_len; j++) {
-              junctions.push_back(ji_data[j]);
-            }
-          }
-        } else if (cigar.find('N') != string::npos) {
+        // if (false && !Rf_isNull(ji_tags[r])) {
+        //   SEXP ji_val = ji_tags[r];
+        //   if (TYPEOF(ji_val) == INTSXP) {
+        //     int* ji_data = INTEGER(ji_val);
+        //     int ji_len = LENGTH(ji_val);
+        //     for (int j = 0; j < ji_len; j++) {
+        //       junctions.push_back(ji_data[j]);
+        //     }
+        //   }
+        // } else 
+          if (cigar.find('N') != string::npos) {
           
           if(junction_pos.find(to_string(read_start)+cigar)== junction_pos.end() ){
             junctions = get_splice_junction_pos(cigar, read_start);
@@ -517,13 +518,13 @@ List analyze_transcript_java_exact(List transcript_info,
         
         if (mapqs[r] < 1) continue;
         
-        if (!Rf_isNull(nh_tags[r])) {
-          SEXP nh_val = nh_tags[r];
-          if (TYPEOF(nh_val) == INTSXP) {
-            int nh = INTEGER(nh_val)[0];
-            if (nh > 1) continue;
-          }
-        }
+        // if (false&& !Rf_isNull(nh_tags[r])) {
+        //   SEXP nh_val = nh_tags[r];
+        //   if (TYPEOF(nh_val) == INTSXP) {
+        //     int nh = INTEGER(nh_val)[0];
+        //     if (nh > 1) continue;
+        //   }
+        // }
         
         string read_name = read_names[r];
         
@@ -540,16 +541,16 @@ List analyze_transcript_java_exact(List transcript_info,
         
         // 获取剪接点
         vector<int> junctions;
-        if (!Rf_isNull(ji_tags[r])) {
-          SEXP ji_val = ji_tags[r];
-          if (TYPEOF(ji_val) == INTSXP) {
-            int* ji_data = INTEGER(ji_val);
-            int ji_len = LENGTH(ji_val);
-            for (int j = 0; j < ji_len; j++) {
-              junctions.push_back(ji_data[j]);
-            }
-          }
-        } else {
+        // if (false && !Rf_isNull(ji_tags[r])) {
+        //   SEXP ji_val = ji_tags[r];
+        //   if (TYPEOF(ji_val) == INTSXP) {
+        //     int* ji_data = INTEGER(ji_val);
+        //     int ji_len = LENGTH(ji_val);
+        //     for (int j = 0; j < ji_len; j++) {
+        //       junctions.push_back(ji_data[j]);
+        //     }
+        //   }
+        // } else {
           if (cigar.find('N') != string::npos) {
             //junctions = get_splice_junction_pos(cigar, read_start);
             if(junction_pos.find(to_string(read_start)+cigar)== junction_pos.end() ){
@@ -561,7 +562,7 @@ List analyze_transcript_java_exact(List transcript_info,
             
             }
           }
-        }
+        //}
         
         if (junctions.size() < 2) continue;//splice site少于2
         
