@@ -1242,7 +1242,7 @@ generate_html_page <- function(all_data, output_file = "splicing_order_report.ht
                                             </div>
                                             <div class="col-md-2">
                                                 <div class="slider-label">Node Spacing: <span id="nodeSpacingValue">${mloParams.nodeSpacing}</span></div>
-                                                <input type="range" class="form-range" min="50" max="500" step="10" value="${mloParams.nodeSpacing}" oninput="updateNodeSpacing(this.value)">
+                                                <input type="range" class="form-range" min="1" max="500" step="10" value="${mloParams.nodeSpacing}" oninput="updateNodeSpacing(this.value)">
                                             </div>
 
                                             <div class="col-md-3">

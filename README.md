@@ -22,7 +22,7 @@ An R package for analyzing intron splicing order using Integer Linear Programmin
 
 ```r
 
-conda create -n r_hrd -c conda-forge -c bioconda \
+conda create -n r_iso -c conda-forge -c bioconda \
 r-base=4.4 r-devtools \
 r-rcpp r-plyr r-dplyr r-igraph r-stringr r-dbscan \
 r-ggplot2 r-ggraph r-tidygraph r-reshape2 r-gridextra \
@@ -32,8 +32,9 @@ bioconductor-genomicalignments bioconductor-rsamtools \
 bioconductor-genomicranges bioconductor-biocstyle -y
 
 # 特殊包
-install.packages("Rsymphony", repos = "https://cran.r-project.org")
-install.packages("lpSovle")
+#install.packages("Rsymphony", repos = "https://cran.r-project.org")
+#options(BioC_mirror="https://mirrors.westlake.edu.cn/bioconductor")
+BiocManager::install("lpSolve")
 # Install the package from GitHub
 devtools::install_github("limeng12/intronOrder")
 
@@ -56,7 +57,7 @@ The package has the following dependencies which will be installed automatically
 ```r
 # Load the package
 library(intronOrder)
-library(Rsymphony)
+#library(Rsymphony)
 library(lpSolve)
 
 # Get example data paths from package
