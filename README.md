@@ -1,4 +1,3 @@
-``` markdown
 # intronOrder - Intron Splicing Order Analysis R Package
 
 An R package for analyzing intron splicing order using Integer Linear Programming (ILP) algorithms. This package processes RNA-seq data to determine the most likely splicing order of introns within transcripts.
@@ -11,7 +10,7 @@ An R package for analyzing intron splicing order using Integer Linear Programmin
 - **Multiple output formats**: PDF plots, HTML reports, and tabular results
 - **Gene annotation support**: Integrate with gene/transcript mapping files
 - **Statistical analysis**: Entropy, correlation, and significance testing
-```
+
 
 ## Installation
 
@@ -104,6 +103,9 @@ generate_splicing_order_report(
 #draw_mlo_plot(igraph_list, "results.plot.pdf")
 #draw_mol_table_plot(igraph_list, "results.table.pdf")
 ```
+![](man/figures/mlo_net.png)![](man/figures/mlo_table.png) 
+
+
 
 ## Analysis Pipeline
 
@@ -125,9 +127,6 @@ The package provides a comprehensive workflow:
 ### 3. Visualization (`generate_splicing_order_report`)
 
 -   **Interactive HTML report**: Browse transcripts, view MLO networks
--   **Dynamic controls**: Adjust node spacing, arc height, link width
--   **Multiple matrices**: Read counts and frequency matrices
--   **Statistical summaries**: Detailed metrics for each transcript
 
 ## Output Files
 
@@ -142,20 +141,6 @@ After running the pipeline, you'll get:
 
 ### Customizing Analysis Parameters
 
-``` r
-# Run analysis with custom parameters
-results <- run_iso_analysis(
-  bed_file = "your_annotation.bed",
-  iso_files = c("your_data1.tsv", "your_data2.tsv"),
-  output_file = "custom_results.tsv",
-  gene_trans_map = "gene_transcript_map.txt",  # Optional
-  read_count_threshold = 10,                   # Minimum read count
-  trans_exp_file = "expressed_transcripts.txt", # Optional filter
-  read_cov_threshold = 0.90,                   # Coverage threshold
-  trim_trans_id_by_dot = TRUE,                 # Trim transcript IDs
-  alpha = 0.05                                 # Smoothing parameter
-)
-```
 
 ### Working with Large Datasets
 
@@ -228,9 +213,6 @@ transcript_id   left_intron right_junction  strand  cover_count junction_count
 2.  **"No reads in BAM file for transcript"**
     -   Verify BAM file has reads in transcript regions
     -   Check alignment quality and MAPQ scores
-3.  **Memory issues with large datasets**
-    -   Use `trans_exp_file` to filter to expressed transcripts
-    -   Increase `read_count_threshold` to reduce data size
 
 ## Citation
 
