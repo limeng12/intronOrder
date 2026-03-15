@@ -1,10 +1,6 @@
 ``` markdown
 # intronOrder - Intron Splicing Order Analysis R Package
 
-![R Version](https://img.shields.io/badge/R-%3E%3D%204.0.0-blue)
-![License](https://img.shields.io/badge/License-MIT-green)
-![CRAN Status](https://img.shields.io/badge/CRAN-Not%20Published-orange)
-
 An R package for analyzing intron splicing order using Integer Linear Programming (ILP) algorithms. This package processes RNA-seq data to determine the most likely splicing order of introns within transcripts.
 
 ## Features
@@ -15,27 +11,18 @@ An R package for analyzing intron splicing order using Integer Linear Programmin
 - **Multiple output formats**: PDF plots, HTML reports, and tabular results
 - **Gene annotation support**: Integrate with gene/transcript mapping files
 - **Statistical analysis**: Entropy, correlation, and significance testing
+```
 
 ## Installation
 
 ### From GitHub (Development Version)
 
-```r
+``` r
 
-conda create -n r_iso -c conda-forge -c bioconda \
-r-base=4.4 r-devtools \
-r-rcpp r-plyr r-dplyr r-igraph r-stringr r-dbscan \
-r-ggplot2 r-ggraph r-tidygraph r-reshape2 r-gridextra \
-r-data.table r-plotly r-dt r-jsonlite r-htmltools \
-r-scales r-testthat r-knitr r-rmarkdown r-readr \
-bioconductor-genomicalignments bioconductor-rsamtools \
-bioconductor-genomicranges bioconductor-biocstyle -y
-
-# 特殊包
-#install.packages("Rsymphony", repos = "https://cran.r-project.org")
-#options(BioC_mirror="https://mirrors.westlake.edu.cn/bioconductor")
-BiocManager::install("lpSolve")
-# Install the package from GitHub
+#install.packages("Rsymphony", repos = "<https://cran.r-project.org>") 
+#options(BioC_mirror="<https://mirrors.westlake.edu.cn/bioconductor>") 
+BiocManager::install("lpSolve") 
+# Install the package from GitHub 
 devtools::install_github("limeng12/intronOrder")
 ```
 
@@ -54,6 +41,24 @@ The package has the following dependencies which will be installed automatically
 ### Basic Usage Example
 
 ``` r
+
+conda create -n r_iso -c conda-forge -c bioconda \
+r-base=4.4 r-devtools \
+r-rcpp r-plyr r-dplyr r-igraph r-stringr r-dbscan \
+r-ggplot2 r-ggraph r-tidygraph r-reshape2 r-gridextra \
+r-data.table r-plotly r-dt r-jsonlite r-htmltools \
+r-scales r-testthat r-knitr r-rmarkdown r-readr \
+bioconductor-genomicalignments bioconductor-rsamtools \
+bioconductor-genomicranges bioconductor-biocstyle -y
+
+
+#install.packages("Rsymphony", repos = "<https://cran.r-project.org>") 
+#options(BioC_mirror="<https://mirrors.westlake.edu.cn/bioconductor>") 
+BiocManager::install("lpSolve") 
+# Install the package from GitHub 
+devtools::install_github("limeng12/intronOrder")
+
+
 # Load the package
 library(intronOrder)
 #library(Rsymphony)
@@ -241,4 +246,4 @@ For issues, feature requests, or questions: - Create an issue on GitHub - Check 
 
 ## License
 
-MIT License - see LICENSE file for details. \`\`\`
+MIT License - see LICENSE file for details. \`
