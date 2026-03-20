@@ -4,13 +4,12 @@ An R package for analyzing intron splicing order using Integer Linear Programmin
 
 ## Features
 
-- **Complete analysis pipeline**: From BAM files to comprehensive reports
-- **ILP-based algorithms**: Find most likely splicing orders using optimization methods
-- **Interactive visualizations**: Generate HTML reports with interactive MLO networks
-- **Multiple output formats**: PDF plots, HTML reports, and tabular results
-- **Gene annotation support**: Integrate with gene/transcript mapping files
-- **Statistical analysis**: Entropy, correlation, and significance testing
-
+-   **Complete analysis pipeline**: From BAM files to comprehensive reports
+-   **ILP-based algorithms**: Find most likely splicing orders using optimization methods
+-   **Interactive visualizations**: Generate HTML reports with interactive MLO networks
+-   **Multiple output formats**: PDF plots, HTML reports, and tabular results
+-   **Gene annotation support**: Integrate with gene/transcript mapping files
+-   **Statistical analysis**: Entropy, correlation, and significance testing
 
 ## Installation
 
@@ -29,11 +28,22 @@ devtools::install_github("limeng12/intronOrder")
 
 The package has the following dependencies which will be installed automatically:
 
--   **Core**: R (\>= 4.0.0), Rcpp, plyr, dplyr, igraph, stringr
--   **Visualization**: ggplot2, ggraph, tidygraph, reshape2, plotly
--   **Bioinformatics**: GenomicRanges, GenomicAlignments, Rsamtools
--   **Optimization**: Rsymphony
--   **Data handling**: data.table, jsonlite, htmltools
+``` r
+options(BioC_mirror = "https://mirrors.westlake.edu.cn/bioconductor")
+options(repos = c(CRAN = "https://mirrors.westlake.edu.cn/CRAN/"))
+
+# CRAN
+install.packages(c("devtools", "Rcpp", "plyr", "dplyr", "igraph", "stringr", 
+                   "dbscan", "ggplot2", "ggraph", "tidygraph", "reshape2", 
+                   "gridExtra", "data.table", "plotly", "DT", "jsonlite", 
+                   "htmltools", "scales", "testthat", "knitr", "rmarkdown", "readr"))
+
+# Bioconductor
+if (!require("BiocManager")) install.packages("BiocManager")
+BiocManager::install(c("GenomicAlignments", "Rsamtools", "GenomicRanges", "BiocStyle"))
+
+
+```
 
 ## Quick Start
 
@@ -103,9 +113,9 @@ generate_splicing_order_report(
 #draw_mlo_plot(igraph_list, "results.plot.pdf")
 #draw_mol_table_plot(igraph_list, "results.table.pdf")
 ```
-![](man/figures/mlo_net.png)![](man/figures/mlo_table.png) 
 
-
+![](man/figures/mlo_net.png)
+![](man/figures/mlo_table.png)
 
 ## Analysis Pipeline
 
@@ -140,7 +150,6 @@ After running the pipeline, you'll get:
 ## Advanced Usage
 
 ### Customizing Analysis Parameters
-
 
 ### Working with Large Datasets
 
