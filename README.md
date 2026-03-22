@@ -7,9 +7,6 @@ An R package for analyzing intron splicing order using Integer Linear Programmin
 -   **Complete analysis pipeline**: From BAM files to comprehensive reports
 -   **ILP-based algorithms**: Find most likely splicing orders using optimization methods
 -   **Interactive visualizations**: Generate HTML reports with interactive MLO networks
--   **Multiple output formats**: PDF plots, HTML reports, and tabular results
--   **Gene annotation support**: Integrate with gene/transcript mapping files
--   **Statistical analysis**: Entropy, correlation, and significance testing
 
 ## Installation
 
