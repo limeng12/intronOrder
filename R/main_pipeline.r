@@ -3,20 +3,14 @@
 #' @param bed_file Path to BED annotation file
 #' @param iso_files Vector of paths to intron splicing order files
 #' @param output_file Path to output file
-#' @param gene_trans_map Optional file mapping transcripts to genes
 #' @param read_count_threshold Read count threshold (default: 0)
-#' @param trans_exp_file Optional file with expressed transcript IDs
 #' @param read_cov_threshold Coverage threshold (default: 0.95)
-#' @param trim_trans_id_by_dot Whether to trim transcript ID by dot (default: TRUE)
 #' @param alpha Smoothing parameter for clustering (default: 0.1)
 #' @return List containing analysis results
 #' @export
 run_iso_analysis <- function(bed_file, iso_files, output_file,
-                            gene_trans_map = "",
                             read_count_threshold = 0,
-                            trans_exp_file = "",
                             read_cov_threshold = 0.95,
-                            trim_trans_id_by_dot = TRUE,
                             alpha = 0.1) {
 
   # 1. Extract introns from BED file
@@ -26,16 +20,10 @@ run_iso_analysis <- function(bed_file, iso_files, output_file,
   exon_pos_mat_fr <- exon_intron_data$exon
 
   # Filter by expressed transcripts if provided
-  if(trans_exp_file != "") {
-    express_trans_ids <- readLines(trans_exp_file)
-    intron_pos_mat_fr <- intron_pos_mat_fr[intron_pos_mat_fr[, "trans_id"] %in% express_trans_ids, ]
-    exon_pos_mat_fr <- exon_pos_mat_fr[exon_pos_mat_fr[, "trans_id"] %in% express_trans_ids, ]
-  }
 
   # 2. Build isoform object
   cat("\n=== Step 2: Building isoform object ===\n")
-  iso_final <- build_iso_object(iso_files, intron_pos_mat_fr,
-                               trans_exp_file = trans_exp_file)
+  iso_final <- build_iso_object(iso_files, intron_pos_mat_fr)
 
   # 3. Calculate isoform summary
   cat("\n=== Step 3: Calculating isoform summary ===\n")
@@ -46,9 +34,6 @@ run_iso_analysis <- function(bed_file, iso_files, output_file,
   igraph_list <- build_adjacency_matrices(iso_final, iso_summary,
                                          read_cov_threshold, read_count_threshold)
 
-  # 5. Cluster introns
-  cat("\n=== Step 5: Clustering introns ===\n")
-  igraph_list <- cluster_introns(igraph_list, alpha)
 
   # 6. Add intron position index
   cat("\n=== Step 6: Adding intron position index ===\n")
@@ -64,9 +49,7 @@ run_iso_analysis <- function(bed_file, iso_files, output_file,
 
   # 9. Output results
   cat("\n=== Step 9: Outputting results ===\n")
-  igraph_list <- output_mlo_results(igraph_list, gene_trans_map,
-                                   intron_pos_mat_fr, output_file,
-                                   trim_trans_id_by_dot)
+  igraph_list <- output_mlo_results(igraph_list,intron_pos_mat_fr, output_file)
 
   
   #generate_splicing_order_report(igraph_list, paste0(output_file,".splicing_order_report.html"));

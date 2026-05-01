@@ -91,9 +91,7 @@ results <- run_iso_analysis(
   bed_file = bedfile,
   iso_files = c("example_iso.tsv"),
   output_file = "results.tsv",
-  gene_trans_map = "",#idmap,
   read_cov_threshold = 0.95,
-  trim_trans_id_by_dot = FALSE,
   alpha = 0.1
 )
 
