@@ -38,26 +38,20 @@ build_iso_object <- function(files_all, intron_anno) {
   
   
   print(paste0("load file: ", files_all[1]))
-  iso_raw <- read.table(files_all[1], header = FALSE, sep = "\t", as.is = TRUE)
+  iso_list <- list()
   
-  if(ncol(iso_raw) == 7) {
-    iso_raw <- iso_raw[, c(1:4, 6, 7)]
-  } else {
-    iso_raw <- iso_raw[, c(1:4, 6)]
-    iso_raw <- cbind(iso_raw, rep(0, nrow(iso_raw)))
-  }
-  
-  colnames(iso_raw) <- c("id", "nexti", "first", "strand", "read_count", "read_count_jc")
-
-  iso_tmp<-"dd"
+  for(i in seq_along(files_all)) {
+    print(paste0("load file: ", files_all[i]))
     
-  for(i in files_all[-1]) {
-    print(paste0("load file: ", i))
-    if(file.size(i) == 0 || (!file.exists(i))) {
+    if(!file.exists(files_all[i]) || file.size(files_all[i]) == 0) {
+      warning(paste("File not found or empty:", files_all[i]))
       next
     }
     
-    iso_tmp <- read.table(i, header = FALSE, sep = "\t", as.is = TRUE)
+    iso_tmp <- read.table(files_all[i], header = FALSE, sep = "\t", 
+                          as.is = TRUE, quote = "")
+    
+    # 统一列处理
     if(ncol(iso_tmp) == 7) {
       iso_tmp <- iso_tmp[, c(1:4, 6, 7)]
     } else {
@@ -65,9 +59,14 @@ build_iso_object <- function(files_all, intron_anno) {
       iso_tmp <- cbind(iso_tmp, rep(0, nrow(iso_tmp)))
     }
     
-    colnames(iso_tmp) <- c("id", "nexti", "first", "strand", "read_count", "read_count_jc")
-    iso_raw <- rbind(iso_raw, iso_tmp)
+    colnames(iso_tmp) <- c("id", "nexti", "first", "strand", 
+                           "read_count", "read_count_jc")
+    
+    iso_list[[i]] <- iso_tmp
   }
+  
+  # 合并所有数据
+  iso_raw <- do.call(rbind, iso_list)
   
     
   # 假设你的数据叫 iso_raw
