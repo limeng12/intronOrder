@@ -631,10 +631,24 @@ List analyze_transcript_java_exact(List transcript_info,
       debug_print(2, "检查 " + to_string(paired_reads_checked) + " 条配对reads，找到 " + to_string(paired_reads_passed) + " 个有效对");
       debug_print(2, "找到 " + to_string(interest_iso.size()) + " 个不同的region");
       
+      //processed_pairs_cover
       
-      result_cover_left_names.insert(result_cover_left_names.end(), cover_left_names.begin(), cover_left_names.end());
-      result_cover_left_names.insert(result_cover_left_names.end(), left_jc_names.begin(), left_jc_names.end());
+      //result_cover_left_names.push_back(transcript_name);
+      //result_cover_left_names.push_back( left_intron_key);
+      unordered_set<string> new_processed_pairs;
       
+      for (const auto& key : processed_pairs_jc) {
+        string combined =  key + "|" + left_intron_key +":" + transcript_name;
+        new_processed_pairs.insert(combined);
+      }
+      
+      
+      
+      result_cover_left_names.insert(result_cover_left_names.end(), new_processed_pairs.begin(), new_processed_pairs.end());
+      
+      //result_cover_left_names.insert(result_cover_left_names.end(), cover_left_names.begin(), cover_left_names.end());
+      //result_cover_left_names.insert(result_cover_left_names.end(), left_jc_names.begin(), left_jc_names.end());
+
       // 保存结果
       for (const auto& entry : interest_iso) {
         vector<string> parts;
