@@ -30,15 +30,14 @@ options(BioC_mirror = "https://mirrors.westlake.edu.cn/bioconductor")
 options(repos = c(CRAN = "https://mirrors.westlake.edu.cn/CRAN/"))
 
 # CRAN
-install.packages(c("devtools", "Rcpp", "plyr", "dplyr", "igraph", "stringr", 
-                   "dbscan", "ggplot2", "ggraph", "tidygraph", "reshape2", 
-                   "gridExtra", "data.table", "plotly", "DT", "jsonlite", 
-                   "htmltools", "scales", "testthat", "knitr", "rmarkdown", "readr"))
+install.packages(c("Rcpp", "dplyr", "stringr", "igraph", "ggplot2", 
+                   "ggraph", "tidygraph", "reshape2", "data.table"))
+
+install.packages(c("callr", "R6", "jsonlite"))  
 
 # Bioconductor
 if (!require("BiocManager")) install.packages("BiocManager")
-BiocManager::install(c("GenomicAlignments", "Rsamtools", "GenomicRanges", "BiocStyle"))
-
+BiocManager::install(c("Rsamtools", "GenomicRanges", "GenomicAlignments"))
 
 ```
 
@@ -49,26 +48,28 @@ BiocManager::install(c("GenomicAlignments", "Rsamtools", "GenomicRanges", "BiocS
 ``` r
 
 conda create -n r_iso -c conda-forge -c bioconda \
-r-base=4.4 r-devtools \
-r-rcpp r-plyr r-dplyr r-igraph r-stringr r-dbscan \
-r-ggplot2 r-ggraph r-tidygraph r-reshape2 r-gridextra \
-r-data.table r-plotly r-dt r-jsonlite r-htmltools \
-r-scales r-testthat r-knitr r-rmarkdown r-readr \
+r-base=4.4 r-devtools r-rcpp r-dplyr r-igraph r-stringr \
+r-ggplot2 r-ggraph r-tidygraph r-reshape2 r-data.table \
+r-callr r-R6 r-jsonlite \
 bioconductor-genomicalignments bioconductor-rsamtools \
-bioconductor-genomicranges bioconductor-biocstyle -y
+bioconductor-genomicranges -y
 
 
-#install.packages("Rsymphony", repos = "<https://cran.r-project.org>") 
-#options(BioC_mirror="<https://mirrors.westlake.edu.cn/bioconductor>") 
-BiocManager::install("lpSolve") 
+
+
 # Install the package from GitHub 
 devtools::install_github("limeng12/intronOrder")
 
 
+# install.packages("Rsymphony", repos = "<https://cran.r-project.org>") 
+BiocManager::install("lpSolve") 
+# install.packages("highs")
+
+
 # Load the package
 library(intronOrder)
-#library(Rsymphony)
 library(lpSolve)
+
 
 # Get example data paths from package. Bam file and 12 columns bed files
 bedfile <- system.file("extdata", 
