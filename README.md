@@ -55,8 +55,6 @@ bioconductor-genomicalignments bioconductor-rsamtools \
 bioconductor-genomicranges -y
 
 
-
-
 # Install the package from GitHub 
 devtools::install_github("limeng12/intronOrder")
 
