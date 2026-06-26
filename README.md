@@ -192,6 +192,11 @@ results <- run_iso_analysis(
 -   Standard 12-column BED format without thick
 -   Must contain exon block information (columns 10-12)
 -   Transcript IDs should be unique
+```
+conda install -c bioconda ucsc-gtftogenepred ucsc-genepredtobed
+gtfToGenePred -genePredExt xxx.gtf xxx.genepred
+genePredToBed xxx.genepred xxx.bed12
+```
 
 ### Gene-Transcript Mapping File (Optional)
 
