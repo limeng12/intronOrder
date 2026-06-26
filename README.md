@@ -236,4 +236,4 @@ For issues, feature requests, or questions: - Create an issue on GitHub - Check 
 
 ## License
 
-MIT License - see LICENSE file for details. \`
+MIT License - see LICENSE file for details. 
